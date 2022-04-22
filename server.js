@@ -2,12 +2,10 @@
 const express = require('express');
 const fs = require('fs');
 
-
 const app = express();
 
-// creating port
+// creating environment variable port
 const PORT = process.env.PORT || 3001;
-
 
 // asks express to create a route for every file in the 'public' folder and give it a '/' route
 app.use(express.static('public'));
