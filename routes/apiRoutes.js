@@ -1,44 +1,44 @@
-// api routes
-
-// dependencies 
+// Dependencies 
 const path = require('path');
 const fs = require('fs')
-// npm app that allows for unique ids to be created
+
+// NPM package which allows for unique id's
 var uniqid = require('uniqid');
 
-
-// routing
+// Routing
 module.exports = (app) => {
 
-
-  // GET /api/notes should read the db.json file and return all saved notes as JSON.
+  // Get '/api/notes' should read the db.json file and return all saved notes as JSON.
   app.get('/api/notes', (req, res) => {
     res.sendFile(path.join(__dirname, '../db/db.json'));
   });
 
-  // POST /api/notes should receive a new note to save on the request body, 
-  // add it to the db.json file, and then return the new note to the client. 
-  // You'll need to find a way to give each note a unique id when it's saved (look into npm packages that could do this for you).
+  // Post '/api/notes' receives a new note to save and adds it to the db.json file, and returns the new note to the client
   app.post('/api/notes', (req, res) => {
     let db = fs.readFileSync('db/db.json');
     db = JSON.parse(db);
     res.json(db);
-
+    // Body for the note
     let userNote = {
       title: req.body.title,
       text: req.body.text,
+      // Create a unique id for each note
       id: uniqid(),
     };
+    // Pushes note to db.json
     db.push(userNote);
     fs.writeFileSync('db/db.json', JSON.stringify(db));
     res.json(db);
-
   });
-  // to delete notes
-  // app.post('/notes/:id', (req, res) => {
-  //   res.sendFile(path.join(__dirname, '../db/db.json'));
-  // })
+
+  // Delete '/api/notes/:id' should receive a query parameter containing the id of a note to delete
+  app.delete('/api/notes/:id', (req, res) => {
+    // Reads note from db.json
+    let db = JSON.parse(fs.readFileSync('db/db.json'))
+    // Removes note with matching id
+    let deleteNotes = db.filter(item => item.id !== req.params.id);
+    // Rewriting note to db.json
+    fs.writeFileSync('db/db.json', JSON.stringify(deleteNotes));
+    res.json(deleteNotes);
+  })
 };
-
-
-// taking the input create a page for the functionality of that, put it in here
